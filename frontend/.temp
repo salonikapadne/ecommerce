@@ -1,0 +1,322 @@
+# 🛒 MERN E-commerce Deployment (FINAL EXAM README)
+
+---
+
+## 🧠 FLOW
+
+```
+Create VM → SSH → Setup → Clone → Backend → Frontend → Run → Test → Done
+```
+
+---
+
+# 🔑 0. SSH KEY (WSL FIX)
+
+```bash
+cp /mnt/c/Users/<your-path>/key.pem ~/
+chmod 400 ~/key.pem
+```
+
+Connect:
+
+```bash
+ssh -i ~/key.pem azureuser@<VM-IP>
+```
+
+---
+
+# ⚙️ 1. BASIC SETUP
+
+```bash
+sudo apt update && sudo apt install -y git curl build-essential
+```
+
+---
+
+# 💀 2. ADD SWAP (VERY IMPORTANT)
+
+```bash
+sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+```
+
+---
+
+# 🟢 3. INSTALL NODE (v20)
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+node -v
+```
+
+---
+
+# 🍃 4. INSTALL MONGO (FIXED)
+
+```bash
+curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
+
+echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+sudo apt update
+sudo apt install -y mongodb-org
+sudo systemctl start mongod
+```
+
+---
+
+# 📦 5. CLONE PROJECT
+
+```bash
+git clone <your-repo>
+cd mern-ecommerce
+```
+
+---
+
+# 🔧 6. BACKEND
+
+```bash
+cd backend
+npm install
+node server.js
+```
+
+---
+
+## ✅ TEST BACKEND
+
+Inside VM:
+
+```bash
+curl http://localhost:5000/api/products
+```
+
+From your laptop:
+
+```bash
+curl http://<VM-IP>:5000/api/products
+```
+
+---
+
+## 🧪 TEST POST (VERY IMPORTANT)
+
+```bash
+curl -X POST http://<VM-IP>:5000/api/products \
+-H "Content-Type: application/json" \
+-d '{"name":"Test Product","price":100,"category":"Electronics","description":"Sample product"}'
+```
+
+---
+
+## 🔁 VERIFY DATA
+
+```bash
+curl http://<VM-IP>:5000/api/products
+```
+
+---
+
+👉 Then stop backend:
+
+```bash
+CTRL + C
+```
+
+---
+
+# 🎨 7. FRONTEND
+
+```bash
+cd ../frontend
+rm -rf node_modules package-lock.json
+npm install --no-audit --no-fund --legacy-peer-deps
+```
+
+Build:
+
+```bash
+VITE_API_URL=http://<VM-IP>:5000/api/products npm run build
+```
+
+---
+
+# 🚀 8. RUN USING PM2
+
+```bash
+sudo npm install -g pm2 serve
+```
+
+Backend:
+
+```bash
+cd ../backend
+pm2 start server.js --name "backend"
+```
+
+Frontend:
+
+```bash
+cd ../frontend
+pm2 serve dist 3000 --name "frontend" --spa
+```
+
+---
+
+# 🌐 9. ACCESS
+
+```
+http://<VM-IP>:3000
+```
+
+---
+
+# 🔥 10. AZURE PORTS
+
+Open:
+
+* 3000 (frontend)
+* 5000 (backend)
+
+---
+
+# 🐛 DEBUGGING (ALL REAL ISSUES)
+
+---
+
+## SSH KEY ERROR
+
+Fix:
+
+```bash
+cp key.pem ~/
+chmod 400 key.pem
+```
+
+---
+
+## Mongo install fail
+
+Fix:
+→ use `jammy` repo
+
+---
+
+## npm error (ENOENT)
+
+Fix:
+→ wrong folder → go into backend/frontend
+
+---
+
+## curl fails
+
+Fix:
+
+```bash
+node server.js
+```
+
+---
+
+## Node version error
+
+Fix:
+→ use Node 20
+
+---
+
+## Site not opening
+
+Fix:
+→ open port 3000
+
+---
+
+## Vite error
+
+Fix:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+## npm hang
+
+Fix:
+
+```bash
+npm install --no-audit --no-fund --legacy-peer-deps
+```
+
+* ADD SWAP
+
+---
+
+## VM freeze
+
+Fix:
+→ restart VM
+
+---
+
+## VM dead
+
+Fix:
+→ delete + recreate
+
+---
+
+# 🧠 FINAL RULES
+
+```
+node server.js → testing
+pm2 start → final
+```
+
+```
+localhost = current machine
+```
+
+```
+ALWAYS add swap before npm
+```
+
+---
+
+# 😌 FINAL STATUS
+
+If you reach:
+
+```bash
+curl http://<VM-IP>:5000/api/products
+```
+
+👉 and get data
+
+THEN:
+
+```
+Backend ✔️
+Mongo ✔️
+API ✔️
+Deployment ✔️
+```
+
+---
+
+# 💀 REAL TALK
+
+If you follow this:
+
+* you won’t panic
+* you won’t get stuck
+* you’ll finish faster than most
+ 
