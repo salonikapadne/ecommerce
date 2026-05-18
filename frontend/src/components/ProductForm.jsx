@@ -5,7 +5,7 @@ const emptyProduct = { name: '', price: '', category: '', description: '', stock
 
 const ProductForm = ({ currentProduct, onSave }) => {
     const [product, setProduct] = useState(currentProduct || emptyProduct);
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api/products';
+    const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000') + '/api/products';
 
     const handleChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
